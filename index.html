@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PdGMap</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+
+    <style>
+      table {
+        font-size: 12px;
+      }
+      #map {
+        width: 1000px;
+        height: 500px;
+      }
+      #listing {
+        position: absolute;
+        width: 330px;
+        height: 470px;
+        overflow: auto;
+        left: 2px;
+        top: 0px;
+        cursor: pointer;
+        overflow-x: hidden;
+      }
+      #locationField {
+        position: absolute;
+        width: 300px;
+        height: 25px;
+        left: 350px;
+        top: 10px;
+        z-index: 5;
+        background-color: #fff;
+      }
+      #searchInput {
+        width: 100%;
+      }
+      .placeIcon {
+        width: 20px;
+        height: 34px;
+        margin: 4px;
+      }
+      .hotelIcon {
+        width: 24px;
+        height: 24px;
+      }
+      #resultsTable {
+        border-collapse: collapse;
+        width: 330px;
+      }
+      .controls {
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+    
+    <style>
+      .iw_table_row {
+        height: 18px;
+      }
+      .iw_attribute_name {
+        font-weight: bold;
+        text-align: right;
+      }
+      .iw_table_icon {
+        text-align: right;
+      }
+      .iw_btn {
+        text-align: center;
+      }
+    </style>
+    
+    <style>
+      .button {
+        display: inline-block;
+        zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
+        *display: inline;
+        vertical-align: baseline;
+        margin: 0 2px;
+        outline: none;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        font: 14px/100% Arial, Helvetica, sans-serif;
+        padding: .5em 2em .55em;
+        text-shadow: 0 1px 1px rgba(0,0,0,.3);
+        -webkit-border-radius: .5em;
+        -moz-border-radius: .5em;
+        border-radius: .5em;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        font-size: 12px;
+        padding: .4em 1.5em .42em;
+        color: #606060;
+        border: solid 1px #b7b7b7;
+        background: #fff;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+        background: -moz-linear-gradient(top, #fff, #ededed);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed');
+      }
+      .button:hover {
+        text-decoration: none;
+      } 
+      .button:active {
+        position: relative;
+        top: 1px;
+      }
+    </style>
+  </head>
+
+  <body>
+    
+    <div id="locationField">
+      <input id="searchInput" class="controls" placeholder="Enter a keyword" type="text" onkeypress="keySearch();"/>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div id="listing" style="display:none;">
+      <table id="resultsTable">
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+    
+    <div style="display: none">
+      <div id="info-content">
+        <table>
+          <tr id="iw-url-row" class="iw_table_row">
+            <td id="iw-icon" class="iw_table_icon"></td>
+            <td id="iw-url"></td>
+          </tr>
+          <tr id="iw-address-row" class="iw_table_row">
+            <td class="iw_attribute_name">Address:</td>
+            <td id="iw-address"></td>
+          </tr>
+          <!-- <tr id="iw-phone-row" class="iw_table_row">
+            <td class="iw_attribute_name">Telephone:</td>
+            <td id="iw-phone"></td>
+          </tr>
+          <tr id="iw-website-row" class="iw_table_row">
+            <td class="iw_attribute_name">Website:</td>
+            <td id="iw-website"></td>
+          </tr> -->
+          <tr id="btn">
+            <td colspan="2" align="center" class="iw_btn">
+              <a id="iw-btn" href="#" class="button">Select</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <script>
+      
+      var centerLatLngAU = {lat: -33.85, lng: 151.00}; // 城市的中心点
+      var distance = 30000; // 允许的范围(米)
+      
+      function checkDistance(latLng) {
+        if(getDistance(centerLatLngAU, latLng) < distance) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      
+      function getDistance(p1, p2) {
+        var R = 6378137;
+        var dLat = rad(p2.lat - p1.lat);
+        var dLong = rad(p2.lng - p1.lng);
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(p1.lat)) * Math.cos(rad(p2.lat)) *
+          Math.sin(dLong / 2) * Math.sin(dLong / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        return d;
+      }
+
+      function rad(x) {
+        return x * Math.PI / 180;
+      }
+      
+      function buildIWContent(place) {
+        document.getElementById('iw-icon').innerHTML = '<img class="hotelIcon" ' +
+          'src="' + place.icon + '"/>';
+        document.getElementById('iw-url').innerHTML = '<b>' + place.name + '</b>';
+        document.getElementById('iw-address').textContent = place.vicinity;
+        
+        /*
+        if (place.formatted_phone_number) {
+          document.getElementById('iw-phone-row').style.display = '';
+          document.getElementById('iw-phone').textContent =
+            place.formatted_phone_number;
+        } else {
+          document.getElementById('iw-phone-row').style.display = 'none';
+        }
+        
+        if (place.website) {
+          var fullUrl = place.website;
+          var website = hostnameRegexp.exec(place.website);
+          if (website === null) {
+            website = 'http://' + place.website + '/';
+            fullUrl = website;
+          }
+          document.getElementById('iw-website-row').style.display = '';
+          document.getElementById('iw-website').textContent = website;
+        } else {
+          document.getElementById('iw-website-row').style.display = 'none';
+        }
+        */
+        
+        document.getElementById('iw-btn').href="javascript:select('" + place.vicinity + "', '"
+          + place.geometry.location.lat() + "', '"
+          + place.geometry.location.lng() + "');";
+      
+      }
+      
+      function select(vicinity, lat, lng) {
+        if(checkDistance({lat: lat, lng: lng})) {
+          alert("回填地址: " + vicinity);
+        } else {
+          alert("超出范围!");
+        }
+      }
+      
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHOcI6wPdKtWR8sk7gc0mS1NukB_hx2y0&libraries=places&callback=initMap"
+      async defer></script>
+    <script>
+      
+      var countryRestrict = {'country': 'AU'};
+      var MARKER_PATH = 'https://maps.gstatic.com/intl/en_us/mapfiles/marker_green';
+      var latLng = {lat: -33.857, lng: 151.215}; // 默认坐标
+      var placeholder = 'Enter a keyword';
+      // var hostnameRegexp = new RegExp('^https?://.+?/');
+      
+      var map, places, infoWindow;
+      var markers = [];
+      var autocomplete;
+      function initMap() {
+        
+        // 样式
+        var styles = [
+          {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [
+              { visibility: "off" }
+            ]
+          }
+        ];
+        var styledMap = new google.maps.StyledMapType(styles, {
+            name: "PdGMap",
+            minZoom: 6 // 最小放大数
+          });
+      
+        // 地图
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: latLng,
+          mapTypeControl: false,
+          panControl: false,
+          streetViewControl: false,
+          scaleControl: true,
+          zoom: 12, // 默认放大数
+          mapTypeControlOptions: {
+            mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'pmap']
+          }
+        });
+      
+        map.mapTypes.set('pmap', styledMap);
+        map.setMapTypeId('pmap');
+      
+        // 自定义坐标
+        var marker = new google.maps.Marker();
+        map.addListener('click', function(e) {
+          marker.setMap(null);
+          marker = placeMarkerAndPanTo(e.latLng, map);
+          // alert(marker.position);
+        });
+      
+        infoWindow = new google.maps.InfoWindow({
+          content: document.getElementById('info-content')
+        });
+      
+        // 输入框初始化
+        autocomplete = new google.maps.places.Autocomplete(
+          /** @type {!HTMLInputElement} */ (
+          document.getElementById('searchInput')), {
+            types: ['(cities)'],
+            componentRestrictions: countryRestrict
+          }
+        );
+        places = new google.maps.places.PlacesService(map);
+        
+        autocomplete.addListener('place_changed', onPlaceChanged);
+        
+      }
+      
+      // 自定义坐标搜索周边
+      function placeMarkerAndPanTo(latLng, map) {
+        var marker = new google.maps.Marker({
+          position: latLng,
+          map: map
+        });
+        map.panTo(latLng);
+        if(map.getZoom() < 15) {
+          map.setZoom(15);
+        }
+        var request = {
+          location: latLng,
+          radius: '100', // 搜索范围
+          types: ['(cities)']
+        };
+        document.getElementById('listing').style.display=""; // 显示地址框
+        search(request); // 开始搜索
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchInput').placeholder = placeholder;
+        return marker;
+      }
+      
+      // 输入框搜索周边
+      function onPlaceChanged() {
+        var place = autocomplete.getPlace();
+        if (place.geometry) {
+          map.panTo(place.geometry.location);
+          map.setZoom(15);
+            var request = {
+            bounds: map.getBounds(),
+            // keyword: 'best view',
+            types: ['(cities)']
+          };
+          document.getElementById('listing').style.display=""; // 显示地址框
+          search(request); // 开始搜索
+        } else {
+          document.getElementById('searchInput').placeholder = placeholder;
+        }
+      }
+
+      // 输入框关键字搜索
+      function keySearch() {
+        if(event.keyCode == 13){
+          var keyword = document.getElementById('searchInput').value;
+          map.setZoom(12);
+          var request = {
+            bounds: map.getBounds(),
+            keyword: keyword
+          };
+          document.getElementById('listing').style.display=""; // 显示地址框
+          search(request); // 开始搜索
+        }
+      }
+
+      // 搜索并标记
+      function search(request) {
+        places.nearbySearch(request, function(results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            clearResults();
+            clearMarkers();
+            for (var i = 0; i < results.length; i++) {
+              var markerLetter = String.fromCharCode('A'.charCodeAt(0) + i);
+              var markerIcon = MARKER_PATH + markerLetter + '.png';
+              markers[i] = new google.maps.Marker({
+                position: results[i].geometry.location,
+                animation: google.maps.Animation.DROP,
+                icon: markerIcon
+              });
+              markers[i].placeResult = results[i];
+              google.maps.event.addListener(markers[i], 'click', showInfoWindow);
+              setTimeout(dropMarker(i), i * 100);
+              addResult(results[i], i);
+            }
+          }
+        });
+      }
+
+      // 清除坐标点
+      function clearMarkers() {
+        for (var i = 0; i < markers.length; i++) {
+          if (markers[i]) {
+            markers[i].setMap(null);
+          }
+        }
+        markers = [];
+      }
+
+      function dropMarker(i) {
+        return function() {
+          markers[i].setMap(map);
+        };
+      }
+
+      function addResult(result, i) {
+        var results = document.getElementById('results');
+        var markerLetter = String.fromCharCode('A'.charCodeAt(0) + i);
+        var markerIcon = MARKER_PATH + markerLetter + '.png';
+        
+        var tr = document.createElement('tr');
+        tr.style.backgroundColor = (i % 2 === 0 ? '#F0F0F0' : '#FFFFFF');
+        tr.style.opacity = "0.9";
+        tr.onclick = function() {
+          google.maps.event.trigger(markers[i], 'click');
+        };
+        
+        var iconTd = document.createElement('td');
+        var nameTd = document.createElement('td');
+        var btnTd = document.createElement('td');
+        
+        var icon = document.createElement('img');
+        icon.src = markerIcon;
+        icon.setAttribute('class', 'placeIcon');
+        icon.setAttribute('className', 'placeIcon');
+        
+        var nameSpan = document.createElement('span');
+        nameSpan.setAttribute('style', 'color:#000;font-size:15px;width:170px; float:left;');
+        var name = document.createTextNode(result.name);
+        nameSpan.appendChild(name);
+        
+        var addressSpan = document.createElement('span');
+        addressSpan.setAttribute('style', 'color:#666;margin-bottom:20px; width:170px; float:left;');
+        var address = document.createTextNode(result.vicinity);
+        addressSpan.appendChild(address);
+        iconTd.appendChild(icon);
+        
+        nameTd.appendChild(nameSpan);
+        nameTd.appendChild(document.createElement('br'));
+        nameTd.appendChild(addressSpan);
+        
+        var a = document.createElement('a');
+        a.setAttribute('id', 'iw-btn');
+        a.setAttribute('class', 'button white medium');
+        a.setAttribute('href', "javascript:select('" + result.vicinity + "', '"
+          + result.geometry.location.lat() + "', '"
+          + result.geometry.location.lng() + "');");
+        a.appendChild(document.createTextNode('Select'));
+        btnTd.appendChild(a);
+        
+        tr.appendChild(iconTd);
+        tr.appendChild(nameTd);
+        tr.appendChild(btnTd);
+        results.appendChild(tr);
+      }
+      
+      function clearResults() {
+        var results = document.getElementById('results');
+        while (results.childNodes[0]) {
+          results.removeChild(results.childNodes[0]);
+        }
+      }
+      
+      // 显示信息框
+      function showInfoWindow() {
+        var marker = this;
+        places.getDetails({placeId: marker.placeResult.place_id},
+          function(place, status) {
+            if (status !== google.maps.places.PlacesServiceStatus.OK) {
+              return;
+            }
+            infoWindow.open(map, marker);
+            buildIWContent(place);
+          }
+        );
+      }
+      
+    </script>
+  </body>
+</html>
