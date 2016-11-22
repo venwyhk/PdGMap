@@ -243,6 +243,8 @@
       var MARKER_PATH = 'https://maps.gstatic.com/intl/en_us/mapfiles/marker_green';
       var latLng = {lat: -33.857, lng: 151.215}; // 默认坐标
       var placeholder = 'Enter a keyword';
+	  var autocompleteSearchTypes = ['(cities)'];
+      var searchTypes = ['(cities)'];
       // var hostnameRegexp = new RegExp('^https?://.+?/');
       
       var map, places, infoWindow;
@@ -297,7 +299,7 @@
         autocomplete = new google.maps.places.Autocomplete(
           /** @type {!HTMLInputElement} */ (
           document.getElementById('searchInput')), {
-            types: ['(cities)'],
+            types: searchTypes,
             componentRestrictions: countryRestrict
           }
         );
@@ -320,7 +322,7 @@
         var request = {
           location: latLng,
           radius: '100', // 搜索范围
-          types: ['(cities)']
+          types: searchTypes
         };
         document.getElementById('listing').style.display=""; // 显示地址框
         search(request); // 开始搜索
@@ -338,7 +340,8 @@
             var request = {
             bounds: map.getBounds(),
             // keyword: 'best view',
-            types: ['(cities)']
+            types: autocompleteSearchTypes,
+            componentRestrictions: countryRestrict
           };
           document.getElementById('listing').style.display=""; // 显示地址框
           search(request); // 开始搜索
