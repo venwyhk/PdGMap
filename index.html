@@ -243,7 +243,7 @@
       var MARKER_PATH = 'https://maps.gstatic.com/intl/en_us/mapfiles/marker_green';
       var latLng = {lat: -33.857, lng: 151.215}; // 默认坐标
       var placeholder = 'Enter a keyword';
-	  var autocompleteSearchTypes = ['(cities)'];
+      var autocompleteSearchTypes = ['(cities)'];
       var searchTypes = ['(cities)'];
       // var hostnameRegexp = new RegExp('^https?://.+?/');
       
@@ -266,7 +266,7 @@
             name: "PdGMap",
             minZoom: 6 // 最小放大数
           });
-      
+        
         // 地图
         map = new google.maps.Map(document.getElementById('map'), {
           center: latLng,
@@ -279,10 +279,10 @@
             mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'pmap']
           }
         });
-      
+        
         map.mapTypes.set('pmap', styledMap);
         map.setMapTypeId('pmap');
-      
+        
         // 自定义坐标
         var marker = new google.maps.Marker();
         map.addListener('click', function(e) {
@@ -290,11 +290,11 @@
           marker = placeMarkerAndPanTo(e.latLng, map);
           // alert(marker.position);
         });
-      
+        
         infoWindow = new google.maps.InfoWindow({
           content: document.getElementById('info-content')
         });
-      
+        
         // 输入框初始化
         autocomplete = new google.maps.places.Autocomplete(
           /** @type {!HTMLInputElement} */ (
