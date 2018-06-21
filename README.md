@@ -1,5 +1,5 @@
 # PdGMap
-This a Google Maps JavaScript API Demo.
+This is a Google Maps JavaScript API Demo.
 
 ***
 
