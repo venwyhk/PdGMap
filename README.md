@@ -9,7 +9,7 @@ This is a Google Maps JavaScript API Demo.
 
 ## preview (预览需要翻墙哦) ##
 
-[click me](http://htmlpreview.github.com/?https://github.com/venwyhk/PdGMap/blob/master/index.html)
+[click me](https://venwyhk.github.io/PdGMap/)
 
 ***
 
