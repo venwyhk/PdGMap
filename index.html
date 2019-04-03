@@ -10,9 +10,6 @@
         margin: 0;
         padding: 0;
       }
-    </style>
-
-    <style>
       table {
         font-size: 12px;
       }
@@ -64,9 +61,6 @@
         outline: none;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       }
-    </style>
-    
-    <style>
       .iw_table_row {
         height: 18px;
       }
@@ -80,9 +74,6 @@
       .iw_btn {
         text-align: center;
       }
-    </style>
-    
-    <style>
       .button {
         display: inline-block;
         zoom: 1; /* zoom and *display = ie7 hack for display:inline-block */
@@ -119,49 +110,7 @@
         top: 1px;
       }
     </style>
-  </head>
 
-  <body>
-    
-    <div id="locationField">
-      <input id="searchInput" class="controls" placeholder="Enter a keyword" type="text" maxlength="50" onkeypress="keySearch();"/>
-    </div>
-    
-    <div id="map"></div>
-    
-    <div id="listing" style="display:none;">
-      <table id="resultsTable">
-        <tbody id="results"></tbody>
-      </table>
-    </div>
-    
-    <div style="display: none">
-      <div id="info-content">
-        <table>
-          <tr id="iw-url-row" class="iw_table_row">
-            <td id="iw-icon" class="iw_table_icon"></td>
-            <td id="iw-url"></td>
-          </tr>
-          <tr id="iw-address-row" class="iw_table_row">
-            <td class="iw_attribute_name">Address:</td>
-            <td id="iw-address"></td>
-          </tr>
-          <!-- <tr id="iw-phone-row" class="iw_table_row">
-            <td class="iw_attribute_name">Telephone:</td>
-            <td id="iw-phone"></td>
-          </tr>
-          <tr id="iw-website-row" class="iw_table_row">
-            <td class="iw_attribute_name">Website:</td>
-            <td id="iw-website"></td>
-          </tr> -->
-          <tr id="btn">
-            <td colspan="2" align="center" class="iw_btn">
-              <a id="iw-btn" href="#" class="button">Select</a>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
     <script>
       
       var centerLatLngAU = {lat: -33.85, lng: 151.00}; // 城市的中心点
@@ -476,5 +425,48 @@
       }
       
     </script>
+  </head>
+
+  <body>
+    
+    <div id="locationField">
+      <input id="searchInput" class="controls" placeholder="Enter a keyword" type="text" maxlength="50" onkeypress="keySearch();"/>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div id="listing" style="display:none;">
+      <table id="resultsTable">
+        <tbody id="results"></tbody>
+      </table>
+    </div>
+    
+    <div style="display: none">
+      <div id="info-content">
+        <table>
+          <tr id="iw-url-row" class="iw_table_row">
+            <td id="iw-icon" class="iw_table_icon"></td>
+            <td id="iw-url"></td>
+          </tr>
+          <tr id="iw-address-row" class="iw_table_row">
+            <td class="iw_attribute_name">Address:</td>
+            <td id="iw-address"></td>
+          </tr>
+          <!-- <tr id="iw-phone-row" class="iw_table_row">
+            <td class="iw_attribute_name">Telephone:</td>
+            <td id="iw-phone"></td>
+          </tr>
+          <tr id="iw-website-row" class="iw_table_row">
+            <td class="iw_attribute_name">Website:</td>
+            <td id="iw-website"></td>
+          </tr> -->
+          <tr id="btn">
+            <td colspan="2" align="center" class="iw_btn">
+              <a id="iw-btn" href="#" class="button">Select</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </body>
 </html>
